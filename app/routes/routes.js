@@ -3,10 +3,12 @@ var routes = express.Router();
 var UserController = require('../controllers/user');
 var authMiddleware = require('../middlewares/auth.middleware');
 
+var userRoutes = require('./user.routes');
 
-routes.get('/users', authMiddleware, UserController.getUsers);
-routes.get('/setup', UserController.addUser);
-routes.post('/authenticate', UserController.login);
+routes.use('/users', userRoutes);
+// routes.get('/users', authMiddleware, UserController.getUsers);
+// routes.get('/setup', UserController.addUser);
+// routes.post('/authenticate', UserController.login);
 routes.get('/', function (req, res) {
     res.json({ message: 'Welcome to the coolest API on earth!' });
 });

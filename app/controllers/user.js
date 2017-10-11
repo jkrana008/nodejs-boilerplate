@@ -5,20 +5,21 @@ var User = require('../models/user');
 var config = require('../config');
 
 function addUser(req, res) {
-    var nick = new User({
-        name: 'Nick Cerminara',
-        password: 'password',
+    var newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
         admin: true
     });
 
     var salt = bcrypt.genSaltSync(10);
-    nick.password = bcrypt.hashSync(nick.password, salt);
+    newUser.password = bcrypt.hashSync(newUser.password, salt);
 
-    nick.save(function (err) {
+    newUser.save(function (err) {
         if (err) throw err;
-
         console.log('User saved successfully');
-        res.json({ success: true });
+        res.status(200);
+        return res.json({ success: true });
     });
 }
 
