@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+var bcrypt = require('bcryptjs');
 
 var User = require('../models/user');
 var config = require('../config');
@@ -9,6 +10,9 @@ function addUser(req, res) {
         password: 'password',
         admin: true
     });
+
+    var salt = bcrypt.genSaltSync(10);
+    nick.password = bcrypt.hashSync(nick.password, salt);
 
     nick.save(function (err) {
         if (err) throw err;
@@ -27,15 +31,16 @@ function login(req, res) {
         if (!user) {
             res.json({ success: false, message: 'User not found' });
         } else if (user) {
-            if (user.password != req.body.password) {
+            if (!bcrypt.compareSync(req.body.password, user.password)) {
                 res.json({ success: false, message: 'Wrong password' });
             } else {
                 console.log(user);
                 var token = jwt.sign({ data: user }, config.secret, { expiresIn: '1h' });
+                
                 res.json({
                     success: true,
                     message: 'Enjoy your token',
-                    token: token
+                    token: token,
                 });
             }
         }
